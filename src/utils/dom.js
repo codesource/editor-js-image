@@ -4,9 +4,10 @@
  * @param  {string} tagName           - new Element tag name
  * @param  {Array|string} classNames  - list or name of CSS class
  * @param  {object} attributes        - any attributes
+ * @param  {string} content        - any attributes
  * @returns {Element}
  */
-export function make(tagName, classNames = null, attributes = {}) {
+export function make(tagName, classNames = null, attributes = {}, content = "") {
   const el = document.createElement(tagName);
 
   if (Array.isArray(classNames)) {
@@ -18,6 +19,8 @@ export function make(tagName, classNames = null, attributes = {}) {
   for (const attrName in attributes) {
     el[attrName] = attributes[attrName];
   }
+
+  el.innerHTML = content;
 
   return el;
 };

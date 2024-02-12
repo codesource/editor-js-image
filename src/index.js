@@ -62,6 +62,7 @@ import { IconAddBorder, IconStretch, IconAddBackground, IconPicture } from '@cod
  * @property {string} buttonContent - overrides for Select File button
  * @property {array} defaultTunes List of default tunes to enable
  * @property {boolean} sizable - can the image be resized?
+ * @property {boolean} allowFullscreen - can the image be display fullscreen?
  * @property {object} [uploader] - optional custom uploader
  * @property {function(File): Promise.<UploadResponseFormat>} [uploader.uploadByFile] - method that upload image by File
  * @property {function(string): Promise.<UploadResponseFormat>} [uploader.uploadByUrl] - method that upload image by URL
@@ -156,6 +157,7 @@ export default class ImageTool {
       actions: config.actions || [],
       defaultTunes: Array.isArray(config.defaultTunes) ? config.defaultTunes : ['withBorder', 'stretched', 'withBackground'],
       sizable: config.sizable || false,
+      allowFullscreen: config.allowFullscreen || false,
     };
 
     /**

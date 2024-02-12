@@ -61,6 +61,7 @@ import { IconAddBorder, IconStretch, IconAddBackground, IconPicture } from '@cod
  * @property {object} additionalRequestHeaders - allows to pass custom headers with Request
  * @property {string} buttonContent - overrides for Select File button
  * @property {array} defaultTunes List of default tunes to enable
+ * @property {boolean} sizable - can the image be resized?
  * @property {object} [uploader] - optional custom uploader
  * @property {function(File): Promise.<UploadResponseFormat>} [uploader.uploadByFile] - method that upload image by File
  * @property {function(string): Promise.<UploadResponseFormat>} [uploader.uploadByUrl] - method that upload image by URL
@@ -154,6 +155,7 @@ export default class ImageTool {
       uploader: config.uploader || undefined,
       actions: config.actions || [],
       defaultTunes: Array.isArray(config.defaultTunes) ? config.defaultTunes : ['withBorder', 'stretched', 'withBackground'],
+      sizable: config.sizable || false,
     };
 
     /**
@@ -178,13 +180,16 @@ export default class ImageTool {
           },
         });
       },
+      onResizePicture: (size) =>{
+        this._data['pictureSize'] = size;
+      },
       readOnly,
     });
 
     this.tunes = ImageTool.tunes
         .filter((tune) => this.config.defaultTunes.indexOf(tune.name) !== -1)
         .concat(this.config.actions);
-    
+
     /**
      * Set saved state
      */
@@ -362,6 +367,13 @@ export default class ImageTool {
 
     this._data.caption = data.caption || '';
     this.ui.fillCaption(this._data.caption);
+
+    if(this.config.sizable){
+      if(typeof data['pictureSize'] !== 'undefined'){
+        this.ui.resizePicture(data['pictureSize']);
+        this._data['pictureSize'] = data['pictureSize'];
+      }
+    }
 
     this.tunes.forEach(({ name: tune }) => {
       const value = typeof data[tune] !== 'undefined' ? data[tune] === true || data[tune] === 'true' : false;

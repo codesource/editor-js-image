@@ -10,6 +10,7 @@
 
     &-picture {
       max-width: 100%;
+      min-width: 100%;
       vertical-align: bottom;
       display: block;
     }
@@ -86,15 +87,37 @@
       margin: 0 6px 0 0;
     }
   }
-  
+
   &--filled {
     .cdx-button {
       display: none;
     }
 
+
     ^&__image {
+      position: relative;
+      &-sizer{
+        align-items: center;
+        cursor: grab;
+        display: none;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        width: 20px;
+      }
+      &-sizer-left{
+        left: 0;
+      }
+      &-sizer-right{
+        right: 0;
+      }
       &-preloader {
         display: none;
+      }
+    }
+    ^&__image:hover {
+      .image-tool__image-sizer{
+        display: flex;
       }
     }
   }

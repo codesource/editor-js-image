@@ -60,6 +60,7 @@ import { IconAddBorder, IconStretch, IconAddBackground, IconPicture } from '@cod
  * @property {object} additionalRequestData - any data to send with requests
  * @property {object} additionalRequestHeaders - allows to pass custom headers with Request
  * @property {string} buttonContent - overrides for Select File button
+ * @property {array} defaultTunes List of default tunes to enable
  * @property {object} [uploader] - optional custom uploader
  * @property {function(File): Promise.<UploadResponseFormat>} [uploader.uploadByFile] - method that upload image by File
  * @property {function(string): Promise.<UploadResponseFormat>} [uploader.uploadByUrl] - method that upload image by URL
@@ -152,6 +153,7 @@ export default class ImageTool {
       buttonContent: config.buttonContent || '',
       uploader: config.uploader || undefined,
       actions: config.actions || [],
+      defaultTunes: Array.isArray(config.defaultTunes) ? config.defaultTunes : ['withBorder', 'stretched', 'withBackground'],
     };
 
     /**
@@ -179,6 +181,10 @@ export default class ImageTool {
       readOnly,
     });
 
+    this.tunes = ImageTool.tunes
+        .filter((tune) => this.config.defaultTunes.indexOf(tune.name) !== -1)
+        .concat(this.config.actions);
+    
     /**
      * Set saved state
      */
@@ -231,11 +237,7 @@ export default class ImageTool {
    * @returns {Array}
    */
   renderSettings() {
-    // Merge default tunes with the ones that might be added by user
-    // @see https://github.com/editor-js/image/pull/49
-    const tunes = ImageTool.tunes.concat(this.config.actions);
-
-    return tunes.map(tune => ({
+    return this.tunes.map(tune => ({
       icon: tune.icon,
       label: this.api.i18n.t(tune.title),
       name: tune.name,
@@ -249,6 +251,13 @@ export default class ImageTool {
           return;
         }
         this.tuneToggled(tune.name);
+        if(tune.toggle) {
+          this.tunes.forEach((other) => {
+            if(tune.name !== other.name && tune.toggle == other.toggle){
+              this.setTune(other.name, false);
+            }
+          })
+        }
       },
     }));
   }
@@ -354,7 +363,7 @@ export default class ImageTool {
     this._data.caption = data.caption || '';
     this.ui.fillCaption(this._data.caption);
 
-    ImageTool.tunes.forEach(({ name: tune }) => {
+    this.tunes.forEach(({ name: tune }) => {
       const value = typeof data[tune] !== 'undefined' ? data[tune] === true || data[tune] === 'true' : false;
 
       this.setTune(tune, value);
